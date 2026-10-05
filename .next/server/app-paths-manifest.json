@@ -1,0 +1,14 @@
+{
+  "/page": "app/page.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/green-society/page": "app/green-society/page.js",
+  "/issues/page": "app/issues/page.js",
+  "/api/wards/route": "app/api/wards/route.js",
+  "/api/categories/route": "app/api/categories/route.js",
+  "/api/issues/route": "app/api/issues/route.js",
+  "/issues/create/page": "app/issues/create/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/notifications/route": "app/api/notifications/route.js",
+  "/dashboard/citizen/page": "app/dashboard/citizen/page.js"
+}

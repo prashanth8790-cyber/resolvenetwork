@@ -1,0 +1,136 @@
+// Prisma Schema for CivicConnect
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String               @id @default(uuid())
+  name          String
+  email         String               @unique
+  passwordHash  String
+  role          String               @default("CITIZEN") // CITIZEN, AUTHORITY, ADMIN
+  department    String?              // Optional department for Authority users
+  status        String               @default("ACTIVE")  // ACTIVE, SUSPENDED
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  // Relations
+  reportedIssues Issue[]             @relation("ReporterRelation")
+  assignedIssues Issue[]             @relation("AssigneeRelation")
+  statusHistory  IssueStatusHistory[] @relation("ActorRelation")
+  supports       IssueSupport[]
+  comments       Comment[]
+  notifications  Notification[]
+}
+
+model Ward {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  code      String   @unique
+  issues    Issue[]
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  issues      Issue[]
+  createdAt   DateTime @default(now())
+}
+
+model Issue {
+  id             String               @id @default(uuid())
+  title          String
+  description    String
+  categoryId     String
+  category       Category             @relation(fields: [categoryId], references: [id])
+  severity       String               @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status         String               @default("SUBMITTED") // SUBMITTED, UNDER_REVIEW, VERIFIED, ASSIGNED, IN_PROGRESS, RESOLVED, CLOSED, REJECTED, REOPENED
+  priorityScore  Int                  @default(0)
+  lat            Float
+  lng            Float
+  address        String
+  wardId         String
+  ward           Ward                 @relation(fields: [wardId], references: [id])
+  reporterId     String
+  reporter       User                 @relation("ReporterRelation", fields: [reporterId], references: [id])
+  assignedToId   String?
+  assignedTo     User?                @relation("AssigneeRelation", fields: [assignedToId], references: [id])
+  beforeImage    String?
+  afterImage     String?
+  resolutionNote String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  // Relations
+  images         IssueImage[]
+  statusHistory  IssueStatusHistory[]
+  supports       IssueSupport[]
+  comments       Comment[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([severity])
+  @@index([wardId])
+  @@index([createdAt])
+  @@index([lat, lng])
+}
+
+model IssueImage {
+  id        String   @id @default(uuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  url       String
+  createdAt DateTime @default(now())
+}
+
+model IssueStatusHistory {
+  id         String   @id @default(uuid())
+  issueId    String
+  issue      Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  actorId    String
+  actor      User     @relation("ActorRelation", fields: [actorId], references: [id])
+  fromStatus String
+  toStatus   String
+  note       String?
+  createdAt  DateTime @default(now())
+}
+
+model IssueSupport {
+  id        String   @id @default(uuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([issueId, userId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  text      String
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
