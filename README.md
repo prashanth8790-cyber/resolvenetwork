@@ -1,6 +1,6 @@
-# CivicConnect — Crowd-Sourced Civic Issue Platform
+# resolvenetwork — Crowd-Sourced Civic Issue Platform
 
-**CivicConnect** is a full-stack, crowd-sourced civic issue reporting and resolution platform built with Next.js App Router, TypeScript, React, Tailwind CSS, Prisma ORM, OpenStreetMap + Leaflet, and Recharts.
+**resolvenetwork** is a full-stack, crowd-sourced civic issue reporting and resolution platform built with Next.js App Router, TypeScript, React, Tailwind CSS, Prisma ORM, OpenStreetMap + Leaflet, and Recharts.
 
 ---
 
